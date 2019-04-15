@@ -8,6 +8,8 @@ import tqdm
 from torchvision import datasets, transforms
 import torchvision
 
+from src.utils import save_checkpoint
+
 
 class Trainer:
     def __init__(self, net, config):
@@ -17,21 +19,27 @@ class Trainer:
         self.net = net
         self.config = config
         self.optimizer = torch.optim.Adam(net.trainable_params(), lr=0.001)
+        self.losses = []
 
-    def run(self, dataloader, epoch=1):
+    def run(self, dataloader, epochs=1):
         print(">> Running trainer")
-        for epoch in range(epoch):
+        for epoch in range(epochs):
             print(">>> Epoch %s" % epoch)
-            for idx, (image, target) in enumerate(tqdm.tqdm_notebook(dataloader, ascii=True)):
+            for idx, (image, target) in enumerate(tqdm.tqdm(dataloader, ascii=True)):
                 image, target = image.to(self.device), target.to(self.device)
                 self.optimizer.zero_grad()
                 predict = self.net(image)
-                loss = F.nll_loss(predict, target)
+                loss = F.binary_cross_entropy_with_logits(predict, target)
                 loss.backward()
+                self.losses.append(loss.item())
                 self.optimizer.step()
+                if idx % 10 == 0:
+                    print(">>> Loss: {}".format(np.mean(self.losses[-10:])))
+
                 if self.config['DEBUG'] == True:
                     break
             print("Trainer epoch finished")
+            save_checkpoint(self.net, {"epoch": epoch}, "{}-net.pth".format(epoch))
 
 
 class Evaluation:
@@ -47,7 +55,7 @@ class Evaluation:
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for idx, (image, target) in enumerate(tqdm.tqdm_notebook(dataloader, ascii=True)):
+            for idx, (image, target) in enumerate(tqdm.tqdm(dataloader, ascii=True)):
                 image, target = image.to(self.device), target.to(self.device)
                 predict = self.net(image)
                 test_loss += F.nll_loss(predict, target, reduction='sum').item()  # sum up batch loss
