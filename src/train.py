@@ -19,6 +19,7 @@ class Trainer:
         self.net = net
         self.config = config
         self.optimizer = torch.optim.Adam(net.trainable_params(), lr=0.001)
+        self.loss = nn.CrossEntropyLoss()
         self.losses = []
 
     def run(self, dataloader, epochs=1):
@@ -29,7 +30,7 @@ class Trainer:
                 image, target = image.to(self.device), target.to(self.device)
                 self.optimizer.zero_grad()
                 predict = self.net(image)
-                loss = F.binary_cross_entropy_with_logits(predict, target)
+                loss = self.loss(predict, target.squeeze(1))
                 loss.backward()
                 self.losses.append(loss.item())
                 self.optimizer.step()
@@ -49,6 +50,7 @@ class Evaluation:
         self.device = config['DEVICE']
         self.net = net
         self.config = config
+        self.loss = nn.CrossEntropyLoss()
 
     def run(self, dataloader):
         print(">> Running Evaluation")
@@ -58,7 +60,7 @@ class Evaluation:
             for idx, (image, target) in enumerate(tqdm.tqdm(dataloader, ascii=True)):
                 image, target = image.to(self.device), target.to(self.device)
                 predict = self.net(image)
-                test_loss += F.nll_loss(predict, target, reduction='sum').item()  # sum up batch loss
+                test_loss += self.loss(predict, target.squeeze(1))
                 pred = predict.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 if self.config['DEBUG'] == True:

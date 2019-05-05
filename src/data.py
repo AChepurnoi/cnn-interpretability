@@ -8,16 +8,9 @@ from PIL import Image
 
 
 class CelebaData(torch.utils.data.Dataset):
-    def __init__(self, folder="celeba/", attr_csv="list_attr_celeba.csv",
-                 image_folder="img", feature="Smiling", samples=2000):
-        self.attrs = pd.read_csv(os.path.join(folder, attr_csv))
+    def __init__(self, csv_file, folder="celeba/", image_folder="img"):
         self.img_path = os.path.join(folder, image_folder)
-        idx = int(np.random.rand() * 25000)
-        negs = self.attrs[self.attrs[feature] == -1].iloc[idx:idx + samples]
-        pos = self.attrs[self.attrs[feature] == 1].iloc[idx:idx + samples]
-        self.data = pd.concat([negs, pos])
-        self.image_ids = self.data['image_id']
-        self.target = (self.data[feature] + 1) / 2
+        self.data = pd.read_csv(csv_file)
         self.transforms = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -25,11 +18,10 @@ class CelebaData(torch.utils.data.Dataset):
         ])
 
     def __len__(self):
-        return len(self.target)
+        return len(self.data)
 
     def __getitem__(self, idx):
-        imid = self.image_ids.iloc[idx]
-        target = self.target.iloc[idx]
+        imid, target = self.data.iloc[idx]
         image = Image.open(os.path.join(self.img_path, imid))
         image = self.transforms(image)
-        return image, torch.FloatTensor(np.array([target]))
+        return image, torch.from_numpy(np.array([target]))
