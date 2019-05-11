@@ -18,7 +18,7 @@ class Trainer:
         self.device = config['DEVICE']
         self.net = net
         self.config = config
-        self.optimizer = torch.optim.Adam(net.trainable_params(), lr=0.001)
+        self.optimizer = torch.optim.Adam(net.trainable_params(), lr=0.00001)
         self.loss = nn.CrossEntropyLoss()
         self.losses = []
 
@@ -34,8 +34,8 @@ class Trainer:
                 loss.backward()
                 self.losses.append(loss.item())
                 self.optimizer.step()
-                if idx % 10 == 0:
-                    print(">>> Loss: {}".format(np.mean(self.losses[-10:])))
+                # if idx % 10 == 0:
+                    # print(">>> Loss: {}".format(np.mean(self.losses[-10:])))
 
                 if self.config['DEBUG'] == True:
                     break

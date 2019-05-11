@@ -3,10 +3,11 @@ import torch
 
 CHECKPOINT_DIR = ""
 
+
 def load_checkpoint(model, checkpoint, optimizer=None):
     exists = os.path.isfile(CHECKPOINT_DIR + checkpoint)
     if exists:
-        state = torch.load(CHECKPOINT_DIR + checkpoint)
+        state = torch.load(CHECKPOINT_DIR + checkpoint, map_location='cpu')
         model.load_state_dict(state['state_dict'], strict=False)
         optimizer_state = state.get('optimizer')
         if optimizer and optimizer_state:
@@ -26,3 +27,7 @@ def save_checkpoint(model, extra, checkpoint, optimizer=None):
 
     torch.save(state, CHECKPOINT_DIR + checkpoint)
     print('model saved to %s' % (CHECKPOINT_DIR + checkpoint))
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)

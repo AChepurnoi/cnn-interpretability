@@ -8,7 +8,7 @@ from PIL import Image
 
 
 class CelebaData(torch.utils.data.Dataset):
-    def __init__(self, csv_file, folder="celeba/", image_folder="img"):
+    def __init__(self, csv_file, folder="celeba/", image_folder="img_align_celeba"):
         self.img_path = os.path.join(folder, image_folder)
         self.data = pd.read_csv(csv_file)
         self.transforms = transforms.Compose([

@@ -7,6 +7,7 @@ from src.config import config
 from src.net import VggNetwork
 import torch
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", help="Number of epochs to train", type=int, default=1)
 parser.add_argument("--batch", help="Number of epochs to train", type=int, default=1)
@@ -34,4 +35,4 @@ eval = Evaluation(net, config)
 for i in range(args.epochs):
     trainer.run(train_loader, epochs=1)
     result = eval.run(val_loader)
-    print(f"Validation result: {result['loss']} / {result['accuracy'] * 100}")
+    print(f"Validation result: {result['loss']} / {result['accuracy']}")
