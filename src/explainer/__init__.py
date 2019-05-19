@@ -1,1 +1,1 @@
-from .model_explainer import VGGClassifierExplainer
+from .model_explainer import ClassifierExplainer

@@ -1,6 +1,7 @@
 from torch import Tensor
 from typing import Type, Tuple
 from src.explainer.misc_functions import apply_colormap_on_image, to_image, convert_to_grayscale
+from src.explainer.functions import *
 from .filter_visualisation import CNNLayerFilterVisualization
 from .gradient_visualisation import generate_smooth_grad, VanillaBackprop
 from .grad_cam import GradCam
@@ -8,7 +9,7 @@ from .guided_backprop import FilterOnImageVisualisation
 import numpy as np
 
 
-class VGGClassifierExplainer:
+class ClassifierExplainer:
     def __init__(self, net):
         self.net = net
 
@@ -45,3 +46,12 @@ class VGGClassifierExplainer:
         gradient = gradient - gradient.min()
         gradient /= gradient.max()
         return gradient
+
+    def distributions_visualisation(self):
+        show_distributions_of_layers(model=self.net)
+
+    def max_activations_patches_visualisation(self,  layer: str, directory_name: str) -> None:
+        show_max_activations_patches(self.net, layer, directory_name)
+
+    def print_summary(self):
+        print_summary(self.net)
