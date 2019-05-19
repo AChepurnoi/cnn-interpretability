@@ -3,6 +3,8 @@
 
 ### How to run
 
+All visualizations are located in the `vis_demo.ipynb` notebook.
+
 Before running check [Virtualenv](https://docs.python-guide.org/dev/virtualenvs/) manual
 
 ```
