@@ -10,7 +10,7 @@ We have packaged a few visualisation algorithms into class that is able get diff
 
 We have trained an example neural network on CelebA dataset to classify Smiling/Not Smiling people. 
 
-### Example Visualisations (vi)
+### Example Visualisations (viz_demo.ipynb)
 
 |Image source                 |Image                   |
 |:---------------------------:|:----------------------:|
